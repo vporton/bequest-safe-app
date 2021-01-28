@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Text, TextField, Loader, Title } from '@gnosis.pm/safe-react-components';
+import { Text, TextField, Button, Title } from '@gnosis.pm/safe-react-components';
 // import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
 import Calendar from "react-calendar";
 
@@ -41,6 +41,11 @@ const App: React.FC = () => {
         onChange={heir => setHeir(heir as any)}
       />
       <Text size="lg">The heir can be a user account or a contract, such as another Gnosis Safe, but there is no software to take a bequest from another smart wallet yet. Surely, it will be available in the future.</Text>
+      <p>
+        <Button size="md" color="primary" variant="contained">Set bequest date and heir!</Button>
+        {' '}
+        <Button size="md" color="primary" variant="contained">Cancel bequest!</Button>
+      </p>
     </Container>
   );
 };
