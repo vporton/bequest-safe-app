@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Text, TextField, Loader, Title } from '@gnosis.pm/safe-react-components';
 // import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
-import DatePicker from "react-datepicker";
+import Calendar from "react-calendar";
 
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-calendar/dist/Calendar.css';
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -28,11 +28,9 @@ const App: React.FC = () => {
       NO ANY WARRANTY EVEN THE IMPLIED ONE!</Text>
       <Title size="md">Bequest your wallet or funds</Title>
       <Text size="lg">Your funds can be taken by the heir after:</Text>
-      <DatePicker
-        selected={bequestDate}
+      <Calendar
+        value={bequestDate}
         onChange={date => setBequestDate(date as any)}
-        showTimeSelect
-        dateFormat="Pp"
         minDate={new Date()}
       />
       <Text color="error" size="md">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
