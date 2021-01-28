@@ -40,7 +40,7 @@ const App: React.FC = () => {
         value={(heir !== null ? heir : "") as any}
         onChange={heir => setHeir(heir as any)}
       />
-      <Text size="lg">The heir can be a user account or a contract, such as another Gnosis Safe, but there is no software to take a bequest from another smart wallet yet. Surely, it will be available in the future.</Text>
+      <Text size="lg">The heir can be a user account or a contract, such as another Gnosis Safe, but there is no software to take a bequest, yet. Surely, it will be available in the future.</Text>
       <p>
         <Button size="md" color="primary" variant="contained">Set bequest date and heir!</Button>
         {' '}
