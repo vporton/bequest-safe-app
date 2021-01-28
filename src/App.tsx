@@ -32,6 +32,7 @@ const App: React.FC = () => {
         value={bequestDate}
         onChange={date => setBequestDate(date as any)}
         minDate={new Date()}
+        view="decade"
       />
       <Text color="error" size="md">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
       <TextField
