@@ -1,7 +1,8 @@
 {
   "name": "bequest-safe-app",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.0.1",
+  "description": "The app to bequest your crypto funds.",
+  "private": false,
   "dependencies": {
     "@gnosis.pm/safe-apps-react-sdk": "1.0.0-beta.1",
     "@gnosis.pm/safe-react-components": "^0.3.0",
