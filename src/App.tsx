@@ -25,7 +25,7 @@ const App: React.FC = () => {
   return (
     <Container>
       <Title size="md">Bequest your wallet or funds</Title>
-      <Text color="error" size="md">Contracts were tested, but not fully tested and not audited,. Use at your own risk!
+      <Text color="error" size="md">Contracts were tested, but not fully tested and not audited. Use at your own risk!
       NO ANY WARRANTY EVEN THE IMPLIED ONE!</Text>
       <Text size="lg">Your funds can be taken by the heir after:</Text>
       <Calendar
