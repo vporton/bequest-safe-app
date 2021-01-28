@@ -1,7 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Button, Loader, Title } from '@gnosis.pm/safe-react-components';
-import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
+import { Text, TextField, Loader, Title } from '@gnosis.pm/safe-react-components';
+// import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -15,52 +18,31 @@ const Container = styled.form`
 `;
 
 const App: React.FC = () => {
-  const { sdk, safe } = useSafeAppsSDK();
-  const [submitting, setSubmitting] = useState(false);
-
-  const submitTx = useCallback(async () => {
-    setSubmitting(true);
-    try {
-      const { safeTxHash } = await sdk.txs.send({
-        txs: [
-          {
-            to: safe.safeAddress,
-            value: '0',
-            data: '0x',
-          },
-        ],
-      });
-      console.log({ safeTxHash });
-      const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
-      console.log({ safeTx });
-    } catch (e) {
-      console.error(e);
-    }
-    setSubmitting(false);
-  }, [safe, sdk]);
+  // const { sdk, safe } = useSafeAppsSDK();
+  const [heir, setHeir] = useState(null);
+  const [bequestDate, setBequestDate] = useState(null);
 
   return (
     <Container>
-      <Title size="md">{safe.safeAddress}</Title>
-      {submitting ? (
-        <>
-          <Loader size="md" />
-          <br />
-          <Button
-            size="lg"
-            color="secondary"
-            onClick={() => {
-              setSubmitting(false);
-            }}
-          >
-            Cancel
-          </Button>
-        </>
-      ) : (
-        <Button size="lg" color="primary" onClick={submitTx}>
-          Submit
-        </Button>
-      )}
+      <Text color="error" size="md">Contracts were tested, but not fully tested and not audited,. Use at your own risk!
+      NO ANY WARRANTY EVEN THE IMPLIED ONE!</Text>
+      <Title size="md">Bequest your wallet or funds</Title>
+      <Text size="lg">Your funds can be taken by the heir after:</Text>
+      <DatePicker
+        selected={bequestDate}
+        onChange={date => setBequestDate(date as any)}
+        showTimeSelect
+        dateFormat="Pp"
+        minDate={new Date()}
+      />
+      <Text color="error" size="md">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
+      <TextField
+        label="The heir"
+        value={(heir !== null ? heir : "") as any}
+        onChange={heir => setHeir(heir as any)}
+      />
+      <Text size="lg">The heir can be a user account or a contract, such as another Gnosis Safe, but there is no software to take a bequest from another smart wallet yet. Surely, it will be available in the future.</Text>
+      <Loader size="md" />
     </Container>
   );
 };
