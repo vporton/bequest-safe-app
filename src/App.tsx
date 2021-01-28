@@ -34,7 +34,7 @@ const App: React.FC = () => {
         minDate={new Date()}
         defaultView="decade"
       />
-      <Text color="error" size="md">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
+      <Text color="error" size="lg">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
       <TextField
         label="The heir"
         value={(heir !== null ? heir : "") as any}
