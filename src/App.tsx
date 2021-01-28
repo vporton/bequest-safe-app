@@ -46,6 +46,7 @@ const App: React.FC = () => {
         {' '}
         <Button size="md" color="primary" variant="contained">Cancel bequest!</Button>
       </p>
+      <Text size="sm"><a target="_blank" rel="noreferrer" href="https://github.com/vporton/bequest-safe-app">App source code</a></Text>
     </Container>
   );
 };
