@@ -26,7 +26,8 @@ const App: React.FC = () => {
     <Container>
       <Title size="md">Bequest your wallet or funds</Title>
       <Text color="error" size="md">Contracts were tested, but not audited. Use at your own risk!
-      NO ANY WARRANTY EVEN THE IMPLIED ONE!</Text>
+      NO ANY WARRANTY EVEN THE IMPLIED ONE! BY USING THIS APP YOU AGREE FOR NO COMPENSATION FOR ANY LOSS
+      BECAUSE OF ANY ERRORS IN THE APP OR ASSOCIATED SMART CONTRACTS OR ANY OTHER SOFTWARE FAILURES!</Text>
       <Text size="lg">Your funds can be taken by the heir after:</Text>
       <Calendar
         value={bequestDate}
