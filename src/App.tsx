@@ -158,13 +158,13 @@ const App: React.FC = () => {
             size="md"
             color="primary"
             variant="contained"
-            onClick={(e: any) => setBequest(heir as string, (bequestDate as Date))}
+            onClick={(e: any) => setBequest((web3 as any).utils.toChecksumAddress(heir as string), (bequestDate as Date))}
           >
             Set bequest date and heir!
           </Button>
           {' '}
           <Button
-            style={{display: heir === null || /^0x0+$/.test(heir as string) ? 'none' : 'inline'}}
+            //style={{display: heir === null || /^0x0+$/.test(heir as string) ? 'none' : 'inline'}}
             size="md"
             color="primary"
             variant="contained"
