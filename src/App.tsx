@@ -79,7 +79,7 @@ const App: React.FC = () => {
             bequestContract.methods.heirs(safeInfo.safeAddress).call(),
             bequestContract.methods.bequestDates(safeInfo.safeAddress).call(),
           ]);
-        setHeir(/^0x0+$/.test(_heir) ? "" : _heir);
+        setHeir(/^0x0+$/.test(_heir) ? null : _heir);
         setBequestDate(_bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date()); // FIXME
         setLoaded(true);
       } catch (err) {
@@ -148,7 +148,7 @@ const App: React.FC = () => {
         <TextField
           label="The heir"
           value={(heir !== null ? heir : "") as any}
-          onChange={(e: any) => setHeir(e.target.value)}
+          onChange={(e: any) => setHeir(/^(0x0+|)$/.test(e.target.value) ? null : e.target.value)}
         />
         <Text size="lg">
           The heir can be a user account or a contract, such as another Gnosis Safe.<br/>
