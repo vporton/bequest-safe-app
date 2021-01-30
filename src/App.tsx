@@ -124,7 +124,7 @@ const App: React.FC = () => {
         <p>
           <Button size="md" color="primary" variant="contained">Set bequest date and heir!</Button>
           {' '}
-          <Button size="md" color="primary" variant="contained">Cancel bequest!</Button>
+          <Button style={{display: heir === null || /^0x0+$/.test(heir as string) ? 'inline' : 'none'}} size="md" color="primary" variant="contained">Cancel bequest!</Button>
         </p>
       </div>
       <Text size="sm"><a target="_blank" rel="noreferrer" href="https://github.com/vporton/bequest-safe-app">App source code</a></Text>
