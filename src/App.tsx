@@ -10,6 +10,8 @@ import 'react-calendar/dist/Calendar.css';
 
 import { rpc_token, bequestContractAddresses } from './config';
 
+const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 const Container = styled.form`
   margin-bottom: 2rem;
   width: 100%;
@@ -22,7 +24,7 @@ const Container = styled.form`
 `;
 
 const App: React.FC = () => {
-  const { sdk: appsSdk, safe: safeInfo, connected } = useSafeAppsSDK();
+  const { sdk: appsSdk, safe: safeInfo } = useSafeAppsSDK();
 
   const [web3, setWeb3] = useState<Web3 | undefined>();
   const [networkNotSupported, setNetworkNotSupported] = useState(false);
@@ -86,7 +88,30 @@ const App: React.FC = () => {
     };
 
     fetchBequestInfo();
-  }, [web3, safeInfo.safeAddress, bequestModuleAbi]);
+  }, [web3, safeInfo.safeAddress, bequestModuleAbi, networkNotSupported, safeInfo.network]); // TODO: Simplify.
+
+  function setBequest(heir: string, bequestDate: Date | null) {
+    if (!bequestDate || bequestDate.getTime() === 0) {
+      alert("This app has zero bequest date bug! I'm doing nothing for your safety.");
+      return;
+    }
+
+    const bequestContractAddress = bequestContractAddresses[safeInfo.network.toLowerCase()]; // duplicate code
+    const bequestContract = new (web3 as any).eth.Contract(bequestModuleAbi, bequestContractAddress);
+    const txs = [
+      {
+        to: bequestContractAddress,
+        value: 0,
+        data: bequestContract.methods.setBequest(heir, bequestDate).encodeABI(),
+      },
+    ];
+    try {
+      console.log(appsSdk);
+      // await appsSdk.txs.send({ txs, params: {} });
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
 
   return (
     <Container>
@@ -122,9 +147,25 @@ const App: React.FC = () => {
           The heir can be a user account or a contract, such as another Gnosis Safe.<br/>
           There is no software to take a bequest, yet. Surely, it will be available in the future.</Text>
         <p>
-          <Button size="md" color="primary" variant="contained">Set bequest date and heir!</Button>
+          <Button
+            style={{display: heir !== null && !/^0x0+$/.test(heir as string) && bequestDate && bequestDate.getTime() !== 0 ? 'inline' : 'none'}}
+            size="md"
+            color="primary"
+            variant="contained"
+            onClick={(e: any) => setBequest(heir as string, bequestDate)}
+          >
+            Set bequest date and heir!
+          </Button>
           {' '}
-          <Button style={{display: heir === null || /^0x0+$/.test(heir as string) ? 'inline' : 'none'}} size="md" color="primary" variant="contained">Cancel bequest!</Button>
+          <Button
+            style={{display: heir === null || /^0x0+$/.test(heir as string) ? 'inline' : 'none'}}
+            size="md"
+            color="primary"
+            variant="contained"
+              onClick={(e: any) => setBequest(NULL_ADDRESS, new Date(0))}
+          >
+            Cancel bequest!
+          </Button>
         </p>
       </div>
       <Text size="sm"><a target="_blank" rel="noreferrer" href="https://github.com/vporton/bequest-safe-app">App source code</a></Text>
