@@ -97,7 +97,9 @@ const App: React.FC = () => {
           This Ethereum network ({safeInfo.network}) is not supported.
         </Text>
       </div>
-      <Text size="lg">Your funds can be taken by the heir after:</Text>
+      <Text size="lg">Your funds can be taken by the heir after:
+        {' '}
+        {bequestDate !== null && (heir || bequestDate.getTime() !== 0) ? bequestDate.toLocaleString() : ""}</Text>
       <Calendar
         value={bequestDate}
         onChange={date => setBequestDate(date as any)}
