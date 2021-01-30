@@ -116,7 +116,7 @@ const App: React.FC = () => {
         <TextField
           label="The heir"
           value={(heir !== null ? heir : "") as any}
-          onChange={heir => setHeir(heir as any)}
+          onChange={(e: any) => setHeir(e.target.value)}
         />
         <Text size="lg">
           The heir can be a user account or a contract, such as another Gnosis Safe.<br/>
