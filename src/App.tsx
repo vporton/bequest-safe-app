@@ -90,12 +90,16 @@ const App: React.FC = () => {
     fetchBequestInfo();
   }, [web3, safeInfo.safeAddress, bequestModuleAbi, networkNotSupported, safeInfo.network]); // TODO: Simplify.
 
-  function setBequest(heir: string, bequestDate: Date | null) {
+  function setBequest(heir: string, bequestDate: Date) {
     if (!bequestDate || bequestDate.getTime() === 0) {
       alert("This app has zero bequest date bug! I'm doing nothing for your safety.");
       return;
     }
 
+    setBequestUnsafe(heir, bequestDate);
+  }
+
+  function setBequestUnsafe(heir: string, bequestDate: Date) {
     const bequestContractAddress = bequestContractAddresses[safeInfo.network.toLowerCase()]; // duplicate code
     const bequestContract = new (web3 as any).eth.Contract(bequestModuleAbi, bequestContractAddress);
     const txs = [
@@ -137,7 +141,7 @@ const App: React.FC = () => {
           value={bequestDate}
           onChange={date => setBequestDate(date as any)}
           minDate={new Date()}
-          defaultView={bequestDate === null ? 'decade' : undefined}
+          defaultView={(bequestDate === null) ? 'decade' : undefined} // TODO: It does not work.
         />
         <Text color="error" size="lg">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
         <TextField
@@ -154,17 +158,17 @@ const App: React.FC = () => {
             size="md"
             color="primary"
             variant="contained"
-            onClick={(e: any) => setBequest(heir as string, bequestDate)}
+            onClick={(e: any) => setBequest(heir as string, (bequestDate as Date))}
           >
             Set bequest date and heir!
           </Button>
           {' '}
           <Button
-            style={{display: heir === null || /^0x0+$/.test(heir as string) ? 'inline' : 'none'}}
+            style={{display: heir === null || /^0x0+$/.test(heir as string) ? 'none' : 'inline'}}
             size="md"
             color="primary"
             variant="contained"
-              onClick={(e: any) => setBequest(NULL_ADDRESS, new Date(0))}
+            onClick={(e: any) => setBequestUnsafe(NULL_ADDRESS, new Date(0))}
           >
             Cancel bequest!
           </Button>
