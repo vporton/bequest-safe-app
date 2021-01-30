@@ -144,6 +144,7 @@ const App: React.FC = () => {
           defaultView={(bequestDate === null) ? 'decade' : undefined} // TODO: It does not work.
         />
         <Text color="error" size="lg">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
+        {/* TODO: Special widget to inpout Ethereum addresses. */}
         <TextField
           label="The heir"
           value={(heir !== null ? heir : "") as any}
