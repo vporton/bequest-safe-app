@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import Web3 from 'web3';
+import {AbiItem} from 'web3-utils';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Text, TextField, Button, Title } from '@gnosis.pm/safe-react-components';
-// import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
+import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
 import Calendar from "react-calendar";
 
 import 'react-calendar/dist/Calendar.css';
+
+import { rpc_token, bequestContractAddresses } from './config';
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -18,9 +22,69 @@ const Container = styled.form`
 `;
 
 const App: React.FC = () => {
-  // const { sdk, safe } = useSafeAppsSDK();
-  const [heir, setHeir] = useState(null);
-  const [bequestDate, setBequestDate] = useState(null);
+  const { sdk: appsSdk, safe: safeInfo, connected } = useSafeAppsSDK();
+
+  const [web3, setWeb3] = useState<Web3 | undefined>();
+  const [networkNotSupported, setNetworkNotSupported] = useState(false);
+  const [bequestModuleAbi, setBequestModuleAbi] = useState<AbiItem[] | undefined>();
+  const [heir, setHeir] = useState<string | null>(null);
+  const [bequestDate, setBequestDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (!safeInfo) {
+      return;
+    }
+
+    const web3Instance = new Web3(`https://${safeInfo.network}.infura.io/v3/${rpc_token}`);
+    setWeb3(web3Instance);
+  }, [safeInfo]);
+
+  useEffect(() => {
+    if (!web3) {
+      return;
+    }
+
+    async function doIt() {
+      try {
+        const abi = await fetch("./abi/BequestModule.json");
+        setBequestModuleAbi(await abi.json());
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    doIt();
+  }, [web3]);
+
+  useEffect(() => {
+    if (!web3 || !bequestModuleAbi) {
+      return;
+    }
+
+    const fetchBequestInfo = async () => {
+      try {
+        const bequestContractAddress/*: string | undefined*/ = bequestContractAddresses[safeInfo.network.toLowerCase()];
+        setNetworkNotSupported(bequestContractAddress === undefined);
+        if (networkNotSupported) {
+          return;
+        }
+
+        const bequestContract = new web3.eth.Contract(bequestModuleAbi, bequestContractAddress);
+        console.log(bequestContractAddress)
+        // FIXME: The following is called two times:
+        const [_heir, _bequestDate] =
+          await Promise.all([
+            bequestContract.methods.heir().call(),
+            bequestContract.methods.bequestDate().call(),
+          ]);
+        setHeir(/^0x0+$/.test(_heir) ? "" : _heir);
+        setBequestDate(_bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date()); // FIXME
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchBequestInfo();
+  }, [web3, safeInfo.safeAddress, bequestModuleAbi]);
 
   return (
     <Container>
@@ -28,6 +92,11 @@ const App: React.FC = () => {
       <Text color="error" size="md">Contracts were tested, but not audited. Use at your own risk!
       NO ANY WARRANTY EVEN THE IMPLIED ONE! BY USING THIS APP YOU AGREE FOR NO COMPENSATION FOR ANY LOSS
       BECAUSE OF ANY ERRORS IN THE APP OR ASSOCIATED SMART CONTRACTS OR ANY OTHER SOFTWARE FAILURES!</Text>
+      <div style={{display: networkNotSupported ? 'block' : 'none'}}>
+        <Text color="error" size="lg">
+          This Ethereum network ({safeInfo.network}) is not supported.
+        </Text>
+      </div>
       <Text size="lg">Your funds can be taken by the heir after:</Text>
       <Calendar
         value={bequestDate}
