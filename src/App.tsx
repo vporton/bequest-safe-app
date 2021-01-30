@@ -110,7 +110,7 @@ const App: React.FC = () => {
           value={bequestDate}
           onChange={date => setBequestDate(date as any)}
           minDate={new Date()}
-          defaultView="decade"
+          defaultView={bequestDate === null ? 'decade' : undefined}
         />
         <Text color="error" size="lg">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
         <TextField
