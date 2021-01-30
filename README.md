@@ -12,6 +12,7 @@ See the `LICENSE` for details.
 - Don't mix the current bequest info with the new bequest info being inputed.
 - Bequest ERC-20/721/1155 separately, without giving full control over the wallet.
 - Bequest to several recipients.
+- Invent something to show the bequest transaction in a human-readable form.
 
 ## Getting Started
 
