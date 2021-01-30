@@ -19,7 +19,7 @@ ReactDOM.render(
           </>
         }
       >
-        <App />
+        <App/>
       </SafeProvider>
     </ThemeProvider>
   </React.StrictMode>,

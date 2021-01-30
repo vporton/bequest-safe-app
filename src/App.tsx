@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import {AbiItem} from 'web3-utils';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Text, TextField, Button, Title } from '@gnosis.pm/safe-react-components';
+import { Text, TextField, Button, Title, Loader } from '@gnosis.pm/safe-react-components';
 import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
 import Calendar from "react-calendar";
 
@@ -26,6 +26,7 @@ const App: React.FC = () => {
 
   const [web3, setWeb3] = useState<Web3 | undefined>();
   const [networkNotSupported, setNetworkNotSupported] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const [bequestModuleAbi, setBequestModuleAbi] = useState<AbiItem[] | undefined>();
   const [heir, setHeir] = useState<string | null>(null);
   const [bequestDate, setBequestDate] = useState<Date | null>(null);
@@ -35,6 +36,7 @@ const App: React.FC = () => {
       return;
     }
 
+    setLoaded(false);
     const web3Instance = new Web3(`https://${safeInfo.network}.infura.io/v3/${rpc_token}`);
     setWeb3(web3Instance);
   }, [safeInfo]);
@@ -62,22 +64,22 @@ const App: React.FC = () => {
 
     const fetchBequestInfo = async () => {
       try {
-        const bequestContractAddress/*: string | undefined*/ = bequestContractAddresses[safeInfo.network.toLowerCase()];
+        const bequestContractAddress = bequestContractAddresses[safeInfo.network.toLowerCase()];
         setNetworkNotSupported(bequestContractAddress === undefined);
         if (networkNotSupported) {
           return;
         }
 
         const bequestContract = new web3.eth.Contract(bequestModuleAbi, bequestContractAddress);
-        console.log(bequestContractAddress)
         // FIXME: The following is called two times:
         const [_heir, _bequestDate] =
           await Promise.all([
-            bequestContract.methods.heir().call(),
-            bequestContract.methods.bequestDate().call(),
+            bequestContract.methods.heirs(safeInfo.safeAddress).call(),
+            bequestContract.methods.bequestDates(safeInfo.safeAddress).call(),
           ]);
         setHeir(/^0x0+$/.test(_heir) ? "" : _heir);
         setBequestDate(_bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date()); // FIXME
+        setLoaded(true);
       } catch (err) {
         console.error(err);
       }
@@ -97,29 +99,34 @@ const App: React.FC = () => {
           This Ethereum network ({safeInfo.network}) is not supported.
         </Text>
       </div>
-      <Text size="lg">Your funds can be taken by the heir after:
-        {' '}
-        {bequestDate !== null && (heir || bequestDate.getTime() !== 0) ? bequestDate.toLocaleString() : ""}</Text>
-      <Calendar
-        value={bequestDate}
-        onChange={date => setBequestDate(date as any)}
-        minDate={new Date()}
-        defaultView="decade"
-      />
-      <Text color="error" size="lg">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
-      <TextField
-        label="The heir"
-        value={(heir !== null ? heir : "") as any}
-        onChange={heir => setHeir(heir as any)}
-      />
-      <Text size="lg">
-        The heir can be a user account or a contract, such as another Gnosis Safe.<br/>
-        There is no software to take a bequest, yet. Surely, it will be available in the future.</Text>
-      <p>
-        <Button size="md" color="primary" variant="contained">Set bequest date and heir!</Button>
-        {' '}
-        <Button size="md" color="primary" variant="contained">Cancel bequest!</Button>
-      </p>
+      <div style={{display: loaded ? 'none' : 'block'}}>
+        <Loader size="md"/>
+      </div>
+        <div style={{display: loaded ? 'block' : 'none'}}>
+        <Text size="lg">Your funds can be taken by the heir after:
+          {' '}
+          {bequestDate !== null && (heir || bequestDate.getTime() !== 0) ? bequestDate.toLocaleString() : ""}</Text>
+        <Calendar
+          value={bequestDate}
+          onChange={date => setBequestDate(date as any)}
+          minDate={new Date()}
+          defaultView="decade"
+        />
+        <Text color="error" size="lg">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
+        <TextField
+          label="The heir"
+          value={(heir !== null ? heir : "") as any}
+          onChange={heir => setHeir(heir as any)}
+        />
+        <Text size="lg">
+          The heir can be a user account or a contract, such as another Gnosis Safe.<br/>
+          There is no software to take a bequest, yet. Surely, it will be available in the future.</Text>
+        <p>
+          <Button size="md" color="primary" variant="contained">Set bequest date and heir!</Button>
+          {' '}
+          <Button size="md" color="primary" variant="contained">Cancel bequest!</Button>
+        </p>
+      </div>
       <Text size="sm"><a target="_blank" rel="noreferrer" href="https://github.com/vporton/bequest-safe-app">App source code</a></Text>
     </Container>
   );
