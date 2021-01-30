@@ -1,4 +1,17 @@
-# My Safe App
+# Safe Bequest App
+
+This app allows to set/change/reset a (future) date after which a "heir" can take control over
+your Gnosis Safe smart wallet. It is useful for bequesting your funds.
+
+The app _was_ tested but not audited, **no any warranty is provided, use at your own risk!**
+See the `LICENSE` for details.
+
+## TODO
+
+- Widget to enter ETH addresses.
+- Don't mix the current bequest info with the new bequest info being inputed.
+- Bequest ERC-20/721/1155 separately, without giving full control over the wallet.
+- Bequest to several recipients.
 
 ## Getting Started
 
@@ -22,30 +35,3 @@ Then:
 - Paste your localhost URL, default is https://localhost:3000/
 - You should see Safe App Starter as a new app
 - Develop your app from there
-
-## Features
-
-Gnosis Safe App Starter combines recommendations described in the following repositories:
-
-- [Safe Apps SDK](https://github.com/gnosis/safe-apps-sdk)
-- [safe-react-components](https://github.com/gnosis/safe-react-components)
-
-You can use the `useSafe` React hook to interact with the Safe Apps SDK
-
-```
-const safe = useSafe();
-console.log(safe.info);
-```
-
-Safe React Components are also integrated and ready to use. [See all components](https://components.gnosis-safe.io/).
-
-## Dependencies
-
-### Included
-- [`@gnosis.pm/safe-react-components`](https://github.com/gnosis/safe-react-components) (UI components themed for the Safe Multisig interface)
-- [`@rmeissner/safe-apps-react-sdk`](https://github.com/rmeissner/safe-sdks-js/tree/master/safe-apps-react-sdk) (React hook for the Safe Apps SDK)
-
-### Recommended
-- [`ethers`](https://github.com/ethers-io/ethers.js) (Library for interacting with Ethereum)
-- [`web3`](https://github.com/ethereum/web3.js/) (Library for interacting with Ethereum)
-- [`@studydefi/money-legos`](https://github.com/studydefi/money-legos) (Library for DeFi interactions)
