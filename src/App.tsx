@@ -102,12 +102,14 @@ const App: React.FC = () => {
       {
         to: bequestContractAddress,
         value: 0,
-        data: bequestContract.methods.setBequest(heir, bequestDate).encodeABI(),
+        data: bequestContract.methods.setBequest(heir, bequestDate.getTime() / 1000).encodeABI(),
       },
     ];
+    async function doIt() {
+      await ((appsSdk.txs as any).send({ txs, params: {} }));
+    }
     try {
-      console.log(appsSdk);
-      // await appsSdk.txs.send({ txs, params: {} });
+      doIt();
     } catch (err) {
       console.error(err.message);
     }
