@@ -2,13 +2,15 @@ import Web3 from 'web3';
 import {AbiItem} from 'web3-utils';
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Text, TextField, Button, Title, Loader } from '@gnosis.pm/safe-react-components';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { Text, TextField, Button, Title, EtherscanButton, Loader } from '@gnosis.pm/safe-react-components';
 import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
 import Calendar from "react-calendar";
 
 import 'react-calendar/dist/Calendar.css';
+import 'react-tabs/style/react-tabs.css';
 
-import { rpc_token, bequestContractAddresses } from './config';
+import { rpc_token, bequestContractAddresses, aggregatorContractAddresses } from './config';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -29,9 +31,13 @@ const App: React.FC = () => {
   const [web3, setWeb3] = useState<Web3 | undefined>();
   const [networkNotSupported, setNetworkNotSupported] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [aggregatorContractAddress, setAggregatorContractAddress] = useState<string | null>(null);
   const [bequestModuleAbi, setBequestModuleAbi] = useState<AbiItem[] | undefined>();
+  const [originalHeir, setOriginalHeir] = useState<string | null>(null);
+  const [originalBequestDate, setOriginalBequestDate] = useState<Date | null>(null);
   const [heir, setHeir] = useState<string | null>(null);
   const [bequestDate, setBequestDate] = useState<Date | null>(null);
+  const [tabIndex, setTabIndex] = useState(0);
 
   useEffect(() => {
     if (!safeInfo) {
@@ -66,6 +72,10 @@ const App: React.FC = () => {
 
     const fetchBequestInfo = async () => {
       try {
+        const _aggregatorContractAddress = aggregatorContractAddresses
+          ? aggregatorContractAddresses[safeInfo.network.toLowerCase() as any] as string
+          : null;
+        setAggregatorContractAddress(_aggregatorContractAddress);
         const bequestContractAddress = bequestContractAddresses[safeInfo.network.toLowerCase()];
         setNetworkNotSupported(bequestContractAddress === undefined);
         if (networkNotSupported) {
@@ -79,8 +89,12 @@ const App: React.FC = () => {
             bequestContract.methods.heirs(safeInfo.safeAddress).call(),
             bequestContract.methods.bequestDates(safeInfo.safeAddress).call(),
           ]);
-        setHeir(/^0x0+$/.test(_heir) ? null : _heir);
-        setBequestDate(_bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date()); // FIXME
+        setOriginalHeir(/^0x0+$/.test(_heir) ? null : _heir);
+        const date = _bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date(); // FIXME
+        setOriginalBequestDate(date);
+        setHeir(originalHeir);
+        setBequestDate(date);
+        setTabIndex(_heir === NULL_ADDRESS || _heir === aggregatorContractAddress ? 0 : 1); // TODO: Use symbolic contants.
         setLoaded(true);
       } catch (err) {
         console.error(err);
@@ -110,13 +124,19 @@ const App: React.FC = () => {
       },
     ];
     async function doIt() {
-      await ((appsSdk.txs as any).send({ txs, params: {} }));
+      try {
+        await ((appsSdk.txs as any).send({ txs, params: {} }));
+      } catch (err) {
+        console.error(err.message);
+      }
     }
-    try {
-      doIt();
-    } catch (err) {
-      console.error(err.message);
-    }
+    doIt();
+  }
+
+  function realHeir() {
+    return tabIndex === 0
+      ? aggregatorContractAddress
+      : (heir ? (web3 as any).utils.toChecksumAddress(heir as string) : null);
   }
 
   return (
@@ -133,10 +153,32 @@ const App: React.FC = () => {
       <div style={{display: loaded ? 'none' : 'block'}}>
         <Loader size="md"/>
       </div>
-        <div style={{display: loaded ? 'block' : 'none'}}>
-        <Text size="lg">Your funds can be taken by the heir after:
+      <div style={{display: loaded ? 'block' : 'none'}}>
+        <p>
+          <span>Current heir:</span>
           {' '}
-          {bequestDate !== null && (heir || bequestDate.getTime() !== 0) ? bequestDate.toLocaleString() : ""}</Text>
+          <span style={{display: originalHeir ? 'inline' : 'none'}}>
+            <span style={{display: originalHeir !== aggregatorContractAddress ? 'inline' : 'none'}}>
+              <code style={{display: originalHeir !== null ? 'inline' : 'none'}}>
+                {originalHeir ? originalHeir : ""}
+              </code>
+              {' '}
+              <EtherscanButton value={originalHeir ? originalHeir : ""} network={safeInfo.network}/>
+            </span>
+            <span style={{display: originalHeir === aggregatorContractAddress ? 'inline' : 'none'}}>
+              <em>(science, software, and other common goods)</em>
+            </span>
+            <br/> 
+            Can be taken after: {originalBequestDate ? String(originalBequestDate) : ""}
+          </span>
+          {' '}
+          <span style={{display: originalHeir ? 'none' : 'inline'}}>
+            <em>(none)</em>
+          </span>
+        </p>
+        <Text size="lg">Allow to take your funds by the heir after:
+          {' '}
+          {bequestDate !== null && (heir || bequestDate.getTime() !== 0) ? String(bequestDate) : ""}</Text>
         <Calendar
           value={bequestDate}
           onChange={date => setBequestDate(date as any)}
@@ -144,22 +186,47 @@ const App: React.FC = () => {
           defaultView={(bequestDate === null) ? 'decade' : undefined} // TODO: It does not work.
         />
         <Text color="error" size="lg">(Be sure to update this date periodically to ensure the heir doesn't take funds early!)</Text>
-        {/* TODO: Special widget to inpout Ethereum addresses. */}
-        <TextField
-          label="The heir"
-          value={(heir !== null ? heir : "") as any}
-          onChange={(e: any) => setHeir(/^(0x0+|)$/.test(e.target.value) ? null : e.target.value)}
-        />
-        <Text size="lg">
-          The heir can be a user account or a contract, such as another Gnosis Safe.<br/>
-          There is no software to take a bequest, yet. Surely, it will be available in the future.</Text>
+        <Text size="lg">Heir:</Text>
+        <Tabs selectedIndex={tabIndex} onSelect={index => setTabIndex(index)}>
+          <TabList>
+            <Tab>Science, free software, common gooods</Tab>
+            <Tab>Custom address</Tab>
+          </TabList>
+          <TabPanel>
+          <Text size="md">
+              Your bequest will be automatically delivered to best scientists,
+              {' '}
+              software developers, open access publishers, and other common goods,
+              {' '}
+              selected by software and free market.
+            </Text>
+            <Text size="md">
+              We use a mathematical operation similar to money transfer from the future
+              {' '}
+              (Think about prediction markets and credits.)
+              {' '}
+              for them to get money before your bequest is withdrawn.
+            </Text>
+          </TabPanel>
+          <TabPanel>
+            {/* TODO: Special widget to inpout Ethereum addresses. */}
+            <TextField
+              label="The heir"
+              value={(heir !== null ? heir : "") as any}
+              onChange={(e: any) => setHeir(/^(0x0+|)$/.test(e.target.value) ? null : e.target.value)}
+            />
+            <Text size="lg">
+              The heir can be a user account or a contract, such as another Gnosis Safe.<br/>
+              There is no software to take a bequest, yet. Surely, it will be available in the future.</Text>
+          </TabPanel>
+        </Tabs>
         <p>
           <Button
-            style={{display: heir !== null && !/^0x0+$/.test(heir as string) && bequestDate && bequestDate.getTime() !== 0 ? 'inline' : 'none'}}
+            style={{display: realHeir() !== null && !/^0x0+$/.test(realHeir() as string) && bequestDate && bequestDate.getTime() !== 0 ? 'inline' : 'none'}}
             size="md"
             color="primary"
             variant="contained"
-            onClick={(e: any) => setBequest((web3 as any).utils.toChecksumAddress(heir as string), (bequestDate as Date))}
+            onClick={(e: any) => setBequest(realHeir(), (bequestDate as Date))}
           >
             Set bequest date and heir!
           </Button>

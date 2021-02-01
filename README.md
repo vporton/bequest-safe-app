@@ -1,7 +1,11 @@
 # Safe Bequest App
 
+WARNING: Deployed only on Rinkeby.
+
 This app allows to set/change/reset a (future) date after which a "heir" can take control over
 your Gnosis Safe smart wallet. It is useful for bequesting your funds.
+
+It allows to bequest to a custom address or to common goods like science and free software.
 
 The app _was_ tested but not audited, **no any warranty is provided, use at your own risk!**
 See the `LICENSE` for details.
@@ -9,7 +13,6 @@ See the `LICENSE` for details.
 ## TODO
 
 - Widget to enter ETH addresses.
-- Don't mix the current bequest info with the new bequest info being inputed.
 - Bequest ERC-20/721/1155 separately, without giving full control over the wallet.
 - Bequest to several recipients.
 - Invent something to show the bequest transaction in a human-readable form.
@@ -21,7 +24,7 @@ Install dependencies and start a local dev server.
 ```
 yarn install
 cp .env.sample .env
-yarn start
+REACT_APP_RPC_TOKEN=<INFURA_KEY> yarn start
 ```
 
 Then:
