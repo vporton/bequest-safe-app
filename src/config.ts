@@ -1,4 +1,4 @@
-export const rpc_token = process.env.REACT_APP_RPC_TOKEN || '';
+export const rpc_token = process.env.REACT_APP_RPC_TOKEN || 'badb730a7c19420ea4f2aa50476afddd';
 
 export const bequestContractAddresses: {[network: string]: string} = {
     rinkeby: '0x67A212EEC9E3048bCAA0450a68Ed9cD7c01Ce4dF',
