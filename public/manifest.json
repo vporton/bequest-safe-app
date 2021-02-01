@@ -2,7 +2,7 @@
   "short_name": "bequest-safe-app",
   "name": "Bequest App",
   "description": "The app to bequest your crypto funds (for Gnosis Safe)",
-  "iconPath": "logo512.png",
+  "iconPath": "logo512.svg",
   "icons": [
     {
       "src": "favicon.ico",
