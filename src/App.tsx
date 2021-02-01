@@ -208,7 +208,7 @@ const App: React.FC = () => {
               for them to get money before your bequest is withdrawn.
             </Text>
             <Text size="md">
-              See <a rel="noopener" href="https://vporton.github.io/future-salary/">Future Salaries</a> about how money is used.
+              See <a rel="noopener" target="_blank" href="https://vporton.github.io/future-salary/">Future Salaries</a> about how money is used.
             </Text>
           </TabPanel>
           <TabPanel>
