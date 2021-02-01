@@ -208,7 +208,7 @@ const App: React.FC = () => {
               for them to get money before your bequest is withdrawn.
             </Text>
             <Text size="md">
-              See <a rel="noopener" target="_blank" href="https://vporton.github.io/future-salary/">Future Salaries</a> about how money is used.
+              See <a rel="noopener noreferrer" target="_blank" href="https://vporton.github.io/future-salary/">Future Salaries</a> about how money is used.
             </Text>
           </TabPanel>
           <TabPanel>
@@ -245,7 +245,7 @@ const App: React.FC = () => {
           </Button>
         </p>
       </div>
-      <Text size="sm"><a target="_blank" rel="noreferrer" href="https://github.com/vporton/bequest-safe-app">App source code</a></Text>
+      <Text size="sm"><a target="_blank" rel="noopener noreferrer" href="https://github.com/vporton/bequest-safe-app">App source code</a></Text>
     </Container>
   );
 };
