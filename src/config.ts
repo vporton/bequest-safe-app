@@ -5,5 +5,5 @@ export const bequestContractAddresses: {[network: string]: string} = {
 };
 
 export const aggregatorContractAddresses: {[network: string]: string} = {
-    rinkeby: '0x5C1163Fe686354853474105eDf256C0a847f9878',
+    rinkeby: '0x5C1163Fe686354853474105eDf256C0a847f9878', // This contract is wrong, need to redeploy.
 };
