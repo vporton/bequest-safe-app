@@ -1,7 +1,7 @@
 {
   "short_name": "bequest-safe-app",
   "name": "Bequest App",
-  "description": "Bequest your crypto funds for children friends or charity",
+  "description": "Bequest your crypto funds for children, friends, or charity",
   "providedBy": {"name": "Future Salaries", "url": "https://reward.portonvictor.org"},
   "iconPath": "logo512.svg",
   "icons": [
