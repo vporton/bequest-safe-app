@@ -68,7 +68,7 @@ const App: React.FC = () => {
   }, [web3]);
 
   useEffect(() => {
-    if (!web3 || !bequestModuleAbi) {
+    if (!web3 || !bequestModuleAbi || !safeInfo.safeAddress) {
       return;
     }
 

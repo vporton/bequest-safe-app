@@ -12,12 +12,13 @@ ReactDOM.render(
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <SafeProvider
-        loader={
-          <>
-            <Title size="md">Waiting for Safe...</Title>
-            <Loader size="md" />
-          </>
-        }
+        // TODO: Uncommenting this makes the app to sometimes load infinitely.
+        // loader={
+        //   <>
+        //     <Title size="md">Waiting for Safe...</Title>
+        //     <Loader size="md" />
+        //   </>
+        // }
       >
         <App/>
       </SafeProvider>
