@@ -196,7 +196,7 @@ const App: React.FC = () => {
             <Text
               size="md"
               color="error"
-              display={{display: aggregatorContractAddress ? 'none' : 'block'}}
+              :display={{display: aggregatorContractAddress ? 'none' : 'block'}}
             >
               Donations funds aggregator contract is not yet ready.
               {' '}
