@@ -1,6 +1,9 @@
 # Safe Bequest App
 
-WARNING: Deployed only on Rinkeby.
+App URL:
+https://cloudflare-ipfs.com/ipfs/QmStjBfQzWNVTgpCaMVUGiH5X7Z4fAZrgsaKpua54S9EvF
+
+WARNING: Deployed only on Binance Smart Chain and Rinkeby.
 
 This app allows to set/change/reset a (future) date after which a "heir" can take control over
 your Gnosis Safe smart wallet. It is useful for bequesting your funds.
