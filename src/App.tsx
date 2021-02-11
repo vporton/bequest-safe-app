@@ -193,7 +193,20 @@ const App: React.FC = () => {
             <Tab>Custom address</Tab>
           </TabList>
           <TabPanel>
-          <Text size="md">
+            <Text
+              size="md"
+              color="error"
+              display={{display: aggregatorContractAddress ? 'none' : 'block'}}
+            >
+              Donations funds aggregator contract is not yet ready.
+              {' '}
+              Don't donate to this science aggregator now! (It won't harm, but nobody will take your donation.)
+              {' '}
+              <a href="https://github.com/vporton/bequest-safe-app">Download</a>
+              {' '}
+              new versions this app from time to time.
+            </Text>
+            <Text size="md">
               Your bequest will be automatically delivered to best scientists,
               {' '}
               software developers, open access publishers, and other common goods,
