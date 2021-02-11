@@ -27,6 +27,7 @@ const Container = styled.form`
 
 const App: React.FC = () => {
   const { sdk: appsSdk, safe: safeInfo } = useSafeAppsSDK();
+  console.log('safeInfo', safeInfo);
 
   const [web3, setWeb3] = useState<Web3 | undefined>();
   const [networkNotSupported, setNetworkNotSupported] = useState(false);
@@ -44,6 +45,7 @@ const App: React.FC = () => {
       return;
     }
 
+    console.log('setLoaded(false);');
     setLoaded(false);
     const web3Instance = new Web3(`https://${safeInfo.network}.infura.io/v3/${rpc_token}`);
     setWeb3(web3Instance);
@@ -95,6 +97,7 @@ const App: React.FC = () => {
         setHeir(originalHeir);
         setBequestDate(date);
         setTabIndex(_heir === NULL_ADDRESS || _heir === aggregatorContractAddress ? 0 : 1); // TODO: Use symbolic contants.
+        console.log('setLoaded(true);');
         setLoaded(true);
       } catch (err) {
         console.error(err);
