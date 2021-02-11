@@ -204,7 +204,11 @@ const App: React.FC = () => {
                 {' '}
                 Don't donate to this science aggregator now! (It won't harm, but nobody will take your donation.)
                 {' '}
-                <a href="https://github.com/vporton/bequest-safe-app">Download</a>
+                <a
+                  rel="noopener noreferrer"
+                  target="_blank"
+                  href="https://github.com/vporton/bequest-safe-app"
+                >Download</a>
                 {' '}
                 new versions of this app from time to time.
               </Text>
