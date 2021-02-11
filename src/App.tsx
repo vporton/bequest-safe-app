@@ -193,7 +193,7 @@ const App: React.FC = () => {
             <Tab>Custom address</Tab>
           </TabList>
           <TabPanel>
-            <div display={{display: aggregatorContractAddress ? 'none' : 'block'}}>
+            <div style={{display: aggregatorContractAddress ? 'none' : 'block'}}>
               <Text size="md" color="error">
                 Donations funds aggregator contract is not yet ready.
                 {' '}
