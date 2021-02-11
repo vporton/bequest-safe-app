@@ -47,7 +47,9 @@ const App: React.FC = () => {
 
     console.log('setLoaded(false);');
     setLoaded(false);
-    const web3Instance = new Web3(`https://${safeInfo.network}.infura.io/v3/${rpc_token}`);
+    const rpcUrl = safeInfo.network.toLowerCase() === 'bsc'
+      ? `https://bsc-dataseed.binance.org/` : `https://${safeInfo.network}.infura.io/v3/${rpc_token}`;
+    const web3Instance =  new Web3(rpcUrl);
     setWeb3(web3Instance);
   }, [safeInfo]);
 
