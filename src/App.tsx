@@ -206,7 +206,7 @@ const App: React.FC = () => {
                 {' '}
                 <a href="https://github.com/vporton/bequest-safe-app">Download</a>
                 {' '}
-                new versions this app from time to time.
+                new versions of this app from time to time.
               </Text>
             </div>
             <Text size="md">
