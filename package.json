@@ -1,6 +1,6 @@
 {
   "name": "bequest-safe-app",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "The app (for Gnosis Safe) to bequest your crypto funds for children friends or charity",
   "license" : " GPL-3.0-or-later",
   "author": {
