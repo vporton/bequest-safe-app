@@ -27,16 +27,15 @@ const Container = styled.form`
 
 const App: React.FC = () => {
   const { sdk: appsSdk, safe: safeInfo } = useSafeAppsSDK();
-  console.log('safeInfo', safeInfo);
 
   const [web3, setWeb3] = useState<Web3 | undefined>();
   const [networkNotSupported, setNetworkNotSupported] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [aggregatorContractAddress, setAggregatorContractAddress] = useState<string | null>(null);
   const [bequestModuleAbi, setBequestModuleAbi] = useState<AbiItem[] | undefined>();
-  const [originalHeir, setOriginalHeir] = useState<string | null>(null);
+  const [originalHeir, setOriginalHeir] = useState('');
   const [originalBequestDate, setOriginalBequestDate] = useState<Date | null>(null);
-  const [heir, setHeir] = useState<string | null>(null);
+  const [heir, setHeir] = useState('');
   const [bequestDate, setBequestDate] = useState<Date | null>(null);
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -45,7 +44,6 @@ const App: React.FC = () => {
       return;
     }
 
-    console.log('setLoaded(false);');
     setLoaded(false);
     const rpcUrl = safeInfo.network.toLowerCase() === 'bsc'
       ? `https://bsc-dataseed.binance.org/` : `https://${safeInfo.network}.infura.io/v3/${rpc_token}`;
@@ -93,13 +91,12 @@ const App: React.FC = () => {
             bequestContract.methods.heirs(safeInfo.safeAddress).call(),
             bequestContract.methods.bequestDates(safeInfo.safeAddress).call(),
           ]);
-        setOriginalHeir(/^0x0+$/.test(_heir) ? null : _heir);
+        setOriginalHeir(_heir);
         const date = _bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date(); // FIXME
         setOriginalBequestDate(date);
         setHeir(originalHeir);
         setBequestDate(date);
         setTabIndex(_heir === NULL_ADDRESS || _heir === aggregatorContractAddress ? 0 : 1); // TODO: Use symbolic contants.
-        console.log('setLoaded(true);');
         setLoaded(true);
       } catch (err) {
         console.error(err);
@@ -139,9 +136,14 @@ const App: React.FC = () => {
   }
 
   function realHeir() {
-    return tabIndex === 0
-      ? aggregatorContractAddress
-      : (heir ? (web3 as any).utils.toChecksumAddress(heir as string) : null);
+    try {
+      return tabIndex === 0
+        ? aggregatorContractAddress
+        : (heir ? (web3 as any).utils.toChecksumAddress(heir) : '');
+    }
+    catch(_) {
+      return NULL_ADDRESS;
+    }
   }
 
   return (
@@ -162,13 +164,11 @@ const App: React.FC = () => {
         <p>
           <span>Current heir:</span>
           {' '}
-          <span style={{display: originalHeir ? 'inline' : 'none'}}>
+          <span style={{display: originalHeir && !/^0x0+$/.test(originalHeir) ? 'inline' : 'none'}}>
             <span style={{display: originalHeir !== aggregatorContractAddress ? 'inline' : 'none'}}>
-              <code style={{display: originalHeir !== null ? 'inline' : 'none'}}>
-                {originalHeir ? originalHeir : ""}
-              </code>
+              {originalHeir}
               {' '}
-              <EtherscanButton value={originalHeir ? originalHeir : ""} network={safeInfo.network}/>
+              <EtherscanButton value={originalHeir} network={safeInfo.network}/>
             </span>
             <span style={{display: originalHeir === aggregatorContractAddress ? 'inline' : 'none'}}>
               <em>(science, software, and other common goods)</em>
@@ -177,13 +177,14 @@ const App: React.FC = () => {
             Can be taken after: {originalBequestDate ? String(originalBequestDate) : ""}
           </span>
           {' '}
-          <span style={{display: originalHeir ? 'none' : 'inline'}}>
+          <span style={{display: originalHeir && !/^0x0+$/.test(originalHeir) ? 'none' : 'inline'}}>
             <em>(none)</em>
           </span>
         </p>
         <Text size="lg">Allow to take your funds by the heir after:
           {' '}
-          {bequestDate !== null && (heir || bequestDate.getTime() !== 0) ? String(bequestDate) : ""}</Text>
+          {bequestDate !== null && ((heir && !/^0x0+$/.test(heir)) || bequestDate.getTime() !== 0) ? String(bequestDate) : ""}
+        </Text>
         <Calendar
           value={bequestDate}
           onChange={date => setBequestDate(date as any)}
@@ -235,8 +236,8 @@ const App: React.FC = () => {
             {/* TODO: Special widget to inpout Ethereum addresses. */}
             <TextField
               label="The heir"
-              value={(heir !== null ? heir : "") as any}
-              onChange={(e: any) => setHeir(/^(0x0+|)$/.test(e.target.value) ? null : e.target.value)}
+              value={heir}
+              onChange={(e: any) => setHeir(e.target.value)}
             />
             <Text size="lg">
               The heir can be a user account or a contract, such as another Gnosis Safe.<br/>
@@ -245,7 +246,7 @@ const App: React.FC = () => {
         </Tabs>
         <p>
           <Button
-            style={{display: realHeir() !== null && !/^0x0+$/.test(realHeir() as string) && bequestDate && bequestDate.getTime() !== 0 ? 'inline' : 'none'}}
+            style={{display: realHeir() !== '' && !/^0x0+$/.test(realHeir()) && bequestDate && bequestDate.getTime() !== 0 ? 'inline' : 'none'}}
             size="md"
             color="primary"
             variant="contained"
@@ -255,7 +256,7 @@ const App: React.FC = () => {
           </Button>
           {' '}
           <Button
-            //style={{display: heir === null || /^0x0+$/.test(heir as string) ? 'none' : 'inline'}}
+            //style={{display: heir === null || /^0x0+$/.test(heir) ? 'none' : 'inline'}}
             size="md"
             color="primary"
             variant="contained"
