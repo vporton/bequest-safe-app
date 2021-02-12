@@ -1,7 +1,7 @@
 # Safe Bequest App
 
 App URL:
-https://cloudflare-ipfs.com/ipfs/QmStjBfQzWNVTgpCaMVUGiH5X7Z4fAZrgsaKpua54S9EvF
+https://ipfs.com/ipfs/QmbVY8maZZ5mSJzsnXHxKNRX5UMhc92PR2fcS61MKLMiGw
 
 WARNING: Deployed only on Binance Smart Chain and Rinkeby.
 
