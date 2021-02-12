@@ -1,7 +1,7 @@
 # Safe Bequest App
 
 App URL:
-https://ipfs.com/ipfs/QmbVY8maZZ5mSJzsnXHxKNRX5UMhc92PR2fcS61MKLMiGw
+https://ipfs.com/ipfs/QmRLE5Kkm71zdbrzPwowrew4KfDuHfzHwvznc4dDJGGYRm
 
 WARNING: Deployed only on Binance Smart Chain and Rinkeby.
 
