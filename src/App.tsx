@@ -67,42 +67,43 @@ const App: React.FC = () => {
     doIt();
   }, [web3]);
 
-  useEffect(() => {
+  const fetchBequestInfo = async () => {
     if (!web3 || !bequestModuleAbi || !safeInfo.safeAddress) {
       return;
     }
 
-    const fetchBequestInfo = async () => {
-      try {
-        const _aggregatorContractAddress = aggregatorContractAddresses
-          ? aggregatorContractAddresses[safeInfo.network.toLowerCase() as any] as string
-          : null;
-        setAggregatorContractAddress(_aggregatorContractAddress);
-        const bequestContractAddress = bequestContractAddresses[safeInfo.network.toLowerCase()];
-        setNetworkNotSupported(bequestContractAddress === undefined);
-        if (networkNotSupported) {
-          return;
-        }
-
-        const bequestContract = new web3.eth.Contract(bequestModuleAbi, bequestContractAddress);
-        // FIXME: The following is called two times:
-        const [_heir, _bequestDate] =
-          await Promise.all([
-            bequestContract.methods.heirs(safeInfo.safeAddress).call(),
-            bequestContract.methods.bequestDates(safeInfo.safeAddress).call(),
-          ]);
-        setOriginalHeir(_heir);
-        const date = _bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date(); // FIXME
-        setOriginalBequestDate(date);
-        setHeir(originalHeir);
-        setBequestDate(date);
-        setTabIndex(_heir === NULL_ADDRESS || _heir === aggregatorContractAddress ? 0 : 1); // TODO: Use symbolic contants.
-        setLoaded(true);
-      } catch (err) {
-        console.error(err);
+    console.log("Fetching bequest information...");
+    try {
+      const _aggregatorContractAddress = aggregatorContractAddresses
+        ? aggregatorContractAddresses[safeInfo.network.toLowerCase() as any] as string
+        : null;
+      setAggregatorContractAddress(_aggregatorContractAddress);
+      const bequestContractAddress = bequestContractAddresses[safeInfo.network.toLowerCase()];
+      setNetworkNotSupported(bequestContractAddress === undefined);
+      if (networkNotSupported) {
+        return;
       }
-    };
 
+      const bequestContract = new web3.eth.Contract(bequestModuleAbi, bequestContractAddress);
+      // FIXME: The following is called two times:
+      const [_heir, _bequestDate] =
+        await Promise.all([
+          bequestContract.methods.heirs(safeInfo.safeAddress).call(),
+          bequestContract.methods.bequestDates(safeInfo.safeAddress).call(),
+        ]);
+      setOriginalHeir(_heir);
+      const date = _bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date(); // FIXME
+      setOriginalBequestDate(date);
+      setHeir(originalHeir);
+      setBequestDate(date);
+      setTabIndex(_heir === NULL_ADDRESS || _heir === aggregatorContractAddress ? 0 : 1); // TODO: Use symbolic contants.
+      setLoaded(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
     fetchBequestInfo();
   }, [web3, safeInfo.safeAddress, bequestModuleAbi, networkNotSupported, safeInfo.network]); // TODO: Simplify.
 
