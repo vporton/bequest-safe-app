@@ -4,13 +4,14 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { Text, TextField, Button, Title, EtherscanButton, Loader } from '@gnosis.pm/safe-react-components';
-import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
+import { useSafe } from '@rmeissner/safe-apps-react-sdk';
 import Calendar from "react-calendar";
 
 import 'react-calendar/dist/Calendar.css';
 import 'react-tabs/style/react-tabs.css';
 
 import { rpc_token, bequestContractAddresses, aggregatorContractAddresses } from './config';
+import { Transaction } from '@rmeissner/safe-apps-react-sdk/dist/safe';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -26,8 +27,6 @@ const Container = styled.form`
 `;
 
 const App: React.FC = () => {
-  const { sdk: appsSdk, safe: safeInfo } = useSafeAppsSDK();
-
   const [web3, setWeb3] = useState<Web3 | undefined>();
   const [networkNotSupported, setNetworkNotSupported] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -38,18 +37,36 @@ const App: React.FC = () => {
   const [heir, setHeir] = useState('');
   const [bequestDate, setBequestDate] = useState<Date | null>(null);
   const [tabIndex, setTabIndex] = useState(0);
+  
+  const safe = useSafe();
 
-  useEffect(() => {
-    if (!safeInfo) {
-      return;
-    }
-
+  function updateWeb3() {
     setLoaded(false);
-    const rpcUrl = safeInfo.network.toLowerCase() === 'bsc'
-      ? `https://bsc-dataseed.binance.org/` : `https://${safeInfo.network}.infura.io/v3/${rpc_token}`;
+    let rpcUrl;
+    switch(safe.info.network.toLowerCase()) {
+      case 'bsc':
+        rpcUrl = `https://bsc-dataseed.binance.org/`;
+        break;
+      case 'xdai':
+        rpcUrl = `https://dai.poa.network/`;
+        break;
+      default:
+        rpcUrl = `https://${safe.info.network}.infura.io/v3/${rpc_token}`;
+    }
     const web3Instance =  new Web3(rpcUrl);
     setWeb3(web3Instance);
-  }, [safeInfo]);
+    console.log('setweb3')
+  }
+
+  useEffect(() => {
+    console.log('safe.info.network', safe.info.network)
+    updateWeb3()
+  }, [safe.info.network]);
+
+  useEffect(() => {
+    console.log('YYYY')
+    updateWeb3()
+  }, []);
 
   useEffect(() => {
     if (!web3) {
@@ -68,18 +85,18 @@ const App: React.FC = () => {
   }, [web3]);
 
   const fetchBequestInfo = async () => {
-    if (!web3 || !bequestModuleAbi || !safeInfo.safeAddress) {
+    if (!web3 || !bequestModuleAbi || !safe.info.safeAddress) {
       return;
     }
 
     console.log("Fetching bequest information...");
     try {
       const _aggregatorContractAddress = aggregatorContractAddresses
-        ? aggregatorContractAddresses[safeInfo.network.toLowerCase() as any] as string
+        ? aggregatorContractAddresses[safe.info.network.toLowerCase() as any] as string
         : null;
       setAggregatorContractAddress(_aggregatorContractAddress);
-      const bequestContractAddress = bequestContractAddresses[safeInfo.network.toLowerCase()];
-      setNetworkNotSupported(bequestContractAddress === undefined);
+      const bequestContractAddress = bequestContractAddresses[safe.info.network.toLowerCase()];
+      setNetworkNotSupported(bequestContractAddress === undefined); // FIXME
       if (networkNotSupported) {
         return;
       }
@@ -88,8 +105,8 @@ const App: React.FC = () => {
       // FIXME: The following is called two times:
       const [_heir, _bequestDate] =
         await Promise.all([
-          bequestContract.methods.heirs(safeInfo.safeAddress).call(),
-          bequestContract.methods.bequestDates(safeInfo.safeAddress).call(),
+          bequestContract.methods.heirs(safe.info.safeAddress).call(),
+          bequestContract.methods.bequestDates(safe.info.safeAddress).call(),
         ]);
       setOriginalHeir(_heir);
       const date = _bequestDate !== 0 ? new Date(_bequestDate * 1000) : new Date(); // FIXME
@@ -103,9 +120,13 @@ const App: React.FC = () => {
     }
   };
 
+  // useEffect(() => {
+  //   fetchBequestInfo();
+  // }, [web3, bequestModuleAbi, safe, networkNotSupported, safe.info.safeAddress, safe.info.network]); // TODO: Simplify.
+
   useEffect(() => {
     fetchBequestInfo();
-  }, [web3, safeInfo.safeAddress, bequestModuleAbi, networkNotSupported, safeInfo.network]); // TODO: Simplify.
+  }, [bequestModuleAbi, web3/*, networkNotSupported, safe.info.safeAddress, safe.info.network*/]); // TODO: Simplify.
 
   function setBequest(heir: string, bequestDate: Date) {
     if (!bequestDate || bequestDate.getTime() === 0) {
@@ -117,7 +138,7 @@ const App: React.FC = () => {
   }
 
   function setBequestUnsafe(heir: string, bequestDate: Date) {
-    const bequestContractAddress = bequestContractAddresses[safeInfo.network.toLowerCase()]; // duplicate code
+    const bequestContractAddress = bequestContractAddresses[safe.info.network.toLowerCase()]; // duplicate code
     const bequestContract = new (web3 as any).eth.Contract(bequestModuleAbi, bequestContractAddress);
     const txs = [
       {
@@ -128,7 +149,7 @@ const App: React.FC = () => {
     ];
     async function doIt() {
       try {
-        await ((appsSdk.txs as any).send({ txs, params: {} }));
+        await (await safe.sendTransactions(txs as any));
       } catch (err) {
         console.error(err.message);
       }
@@ -155,7 +176,7 @@ const App: React.FC = () => {
       BECAUSE OF ANY ERRORS IN THE APP OR ASSOCIATED SMART CONTRACTS OR ANY OTHER SOFTWARE FAILURES!</Text>
       <div style={{display: networkNotSupported ? 'block' : 'none'}}>
         <Text color="error" size="lg">
-          This Ethereum network ({safeInfo.network}) is not supported.
+          This Ethereum network ({safe.info.network}) is not supported.
         </Text>
       </div>
       <div style={{display: loaded ? 'none' : 'block'}}>
@@ -169,7 +190,7 @@ const App: React.FC = () => {
             <span style={{display: originalHeir !== aggregatorContractAddress ? 'inline' : 'none'}}>
               {originalHeir}
               {' '}
-              <EtherscanButton value={originalHeir} network={safeInfo.network}/>
+              <EtherscanButton value={originalHeir} network={safe.info.network}/>
             </span>
             <span style={{display: originalHeir === aggregatorContractAddress ? 'inline' : 'none'}}>
               <em>(science, software, and other common goods)</em>

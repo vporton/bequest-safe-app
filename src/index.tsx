@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ThemeProvider } from 'styled-components';
 import { theme, Loader, Title } from '@gnosis.pm/safe-react-components';
-import SafeProvider from '@gnosis.pm/safe-apps-react-sdk';
+import SafeProvider from '@rmeissner/safe-apps-react-sdk';
 
 import GlobalStyle from './GlobalStyle';
 import App from './App';
@@ -13,7 +13,7 @@ ReactDOM.render(
       <GlobalStyle />
       <SafeProvider
         // TODO: Uncommenting this makes the app to sometimes load infinitely.
-        // loader={
+        // loading={
         //   <>
         //     <Title size="md">Waiting for Safe...</Title>
         //     <Loader size="md" />

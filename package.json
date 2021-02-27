@@ -2,7 +2,7 @@
   "name": "bequest-safe-app",
   "version": "0.0.9",
   "description": "The app (for Gnosis Safe) to bequest your crypto funds for children friends or charity",
-  "license" : " GPL-3.0-or-later",
+  "license": " GPL-3.0-or-later",
   "author": {
     "name": "Victor Porton",
     "email": "porotn@narod.ru"
@@ -10,16 +10,17 @@
   "private": false,
   "funding": "https://gitcoin.co/grants/1591/science-of-the-future-the-100-years-forward-plan",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/vporton/bequest-safe-app.git"
+    "type": "git",
+    "url": "https://github.com/vporton/bequest-safe-app.git"
   },
   "bugs": {
-    "url" : "https://github.com/vporton/bequest-safe-app/issues"
+    "url": "https://github.com/vporton/bequest-safe-app/issues"
   },
   "dependencies": {
-    "@gnosis.pm/safe-apps-react-sdk": "1.0.0-beta.1",
+    "@gnosis.pm/safe-apps-sdk": "^2.0.0",
     "@gnosis.pm/safe-react-components": "^0.3.0",
     "@material-ui/core": "^4.11.0",
+    "@rmeissner/safe-apps-react-sdk": "^0.4.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.1.3",
