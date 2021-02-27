@@ -11,7 +11,6 @@ import 'react-calendar/dist/Calendar.css';
 import 'react-tabs/style/react-tabs.css';
 
 import { rpc_token, bequestContractAddresses, aggregatorContractAddresses } from './config';
-import { Transaction } from '@rmeissner/safe-apps-react-sdk/dist/safe';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 
@@ -59,14 +58,8 @@ const App: React.FC = () => {
   }
 
   useEffect(() => {
-    console.log('safe.info.network', safe.info.network)
     updateWeb3()
   }, [safe.info.network]);
-
-  useEffect(() => {
-    console.log('YYYY')
-    updateWeb3()
-  }, []);
 
   useEffect(() => {
     if (!web3) {
@@ -120,13 +113,9 @@ const App: React.FC = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchBequestInfo();
-  // }, [web3, bequestModuleAbi, safe, networkNotSupported, safe.info.safeAddress, safe.info.network]); // TODO: Simplify.
-
   useEffect(() => {
     fetchBequestInfo();
-  }, [bequestModuleAbi, web3/*, networkNotSupported, safe.info.safeAddress, safe.info.network*/]); // TODO: Simplify.
+  }, [bequestModuleAbi, web3, networkNotSupported, safe.info.safeAddress, safe.info.network]); // TODO: Simplify.
 
   function setBequest(heir: string, bequestDate: Date) {
     if (!bequestDate || bequestDate.getTime() === 0) {
