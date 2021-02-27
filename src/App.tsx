@@ -200,25 +200,10 @@ const App: React.FC = () => {
             <Tab>Custom address</Tab>
           </TabList>
           <TabPanel>
-            <div style={{display: aggregatorContractAddress ? 'none' : 'block'}}>
-              <Text size="md" color="error">
-                Donations funds aggregator contract is not yet ready.
-                {' '}
-                Don't donate to this science aggregator now! (It won't harm, but nobody will take your donation.)
-                {' '}
-                <a
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  href="https://github.com/vporton/bequest-safe-app"
-                >Download</a>
-                {' '}
-                new versions of this app from time to time.
-              </Text>
-            </div>
             <Text size="md">
               Your bequest will be automatically delivered to best scientists,
               {' '}
-              software developers, open access publishers, and other common goods,
+              software developers, open access publishers, carbon accounters, and other common goods,
               {' '}
               selected by software and free market.
             </Text>
@@ -231,6 +216,9 @@ const App: React.FC = () => {
             </Text>
             <Text size="md">
               See <a rel="noopener noreferrer" target="_blank" href="https://vporton.github.io/future-salary/">Future Salaries</a> about how money is used.
+            </Text>
+            <Text size="md" color="error">
+              Currenly common good bequests work only on xDai network.
             </Text>
           </TabPanel>
           <TabPanel>
